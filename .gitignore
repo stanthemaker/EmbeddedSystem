@@ -1,52 +1,24 @@
-# Prerequisites
-*.d
+.DS_Store
 
-# Object files
-*.o
-*.ko
-*.obj
-*.elf
+# clion
+.idea/
+.github/
+cmake-build-*/
+# exporters
+GettingStarted.html
+eclipse-extras/
 
-# Linker output
-*.ilk
-*.map
-*.exp
-
-# Precompiled Headers
-*.gch
-*.pch
-
-# Libraries
-*.lib
-*.a
-*.la
-*.lo
-
-# Shared objects (inc. Windows DLLs)
-*.dll
-*.so
-*.so.*
-*.dylib
-
-# Executables
-*.exe
-*.out
-*.app
-*.i*86
-*.x86_64
-*.hex
-
-# Debug files
-*.dSYM/
-*.su
-*.idb
-*.pdb
-
-# Kernel Module Compile Results
-*.mod*
-*.cmd
-.tmp_versions/
-modules.order
-Module.symvers
-Mkfile.old
-dkms.conf
+# mbed build system
+mbed-os/
+mbed_settings.py
+mbed_config.h
+*.pyc
+BUILD/
+cmake-build-debug/
+BUILD
+resources
+.mbed
+mbed-os
+COMPONENT_ism43362
+BSP_B-L475E-IOT01
+BSP_B-L475E-IOT01.lib
