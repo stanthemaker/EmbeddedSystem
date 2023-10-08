@@ -8,6 +8,15 @@ It creates a TCPSocket and performs an HTTP transaction targeting the website in
 
 The example can be configured to use a TLSSocket. This works only on devices that support TRNG.
 
+
+## How to run
+Open the `./source/visualize.py` server first 
+```bash
+    $ python3 ./source/visualize.py
+```
+Then run `./source/main.cpp` 
+
+
 ## Selecting the network interface
 
 This application is able to use any network interface it finds.
