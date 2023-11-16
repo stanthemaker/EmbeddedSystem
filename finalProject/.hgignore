@@ -1,0 +1,9 @@
+^BUILD$
+^.mbed$
+^LSM6DSL$
+^LPS22HB$
+^LIS3MDL$
+^LSM303AGR$
+^mbed$
+^HTS221$
+^VL53L0X$
