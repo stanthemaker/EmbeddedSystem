@@ -40,30 +40,36 @@
 /* Includes */
 #include "mbed.h"
 #include <tof_gestures.h>
-#include <tof_gestures_SWIPE_1.h>
+// #include <tof_gestures_DIRSWIPE_1.h>
+#include <tof_gestures_DIRSWIPE_1.h>
 #include "VL53L0X.h"
 
 /* Retrieve the composing elements of the expansion board */
 
 /* Interface definition */
 static DevI2C devI2c(PB_11,PB_10);
+static DevI2C devI2c_2(D14,D15);
 
 /* Range sensor - B-L475E-IOT01A2 only */
 static DigitalOut shutdown_pin(PC_6);
-static VL53L0X VL53L0X(&devI2c, &shutdown_pin, PC_7);
+static DigitalOut shutdown_pin_2(PB_2);
+static class VL53L0X VL53L0X(&devI2c, &shutdown_pin, PC_7);
+static class VL53L0X VL53L0X_2(&devI2c_2, &shutdown_pin_2, PA_4);
 
 /* Simple main function */
 int main() {
     // Gesture structure.
-    Gesture_SWIPE_1_Data_t gestureSwipeData;
+    Gesture_DIRSWIPE_1_Data_t gestureSwipeData;
     // Range value
-    uint32_t distance;
+    uint32_t distance, distance_2;
     uint16_t detected_num = 0;
-  
     VL53L0X.init_sensor(VL53L0X_DEFAULT_ADDRESS);
-    tof_gestures_initSWIPE_1(&gestureSwipeData);
+    VL53L0X_2.init_sensor(VL53L0X_DEFAULT_ADDRESS);
+    
+    tof_gestures_initDIRSWIPE_1(400,1,1500,&gestureSwipeData); //max duration = 1.5s
+    // tof_gestures_initSWIPE_1(&gestureSwipeData);
   
-    printf("\n\r--- Reading sensor values ---\n\r"); ;
+    printf("--- Reading sensor values ---\n"); ;
  
     while(1) {
         int gesture_code;
@@ -71,21 +77,38 @@ int main() {
 
         status = VL53L0X.get_distance(&distance);
         if (status != VL53L0X_ERROR_NONE) {
-            distance = 1200;   
+            distance = 3000; 
         }
-        gesture_code = tof_gestures_detectSWIPE_1(distance, &gestureSwipeData);
+        printf("VL53L0X_1 [mm]: %6ld \r\n", distance);
+        status = VL53L0X_2.get_distance(&distance_2);
+        if (status != VL53L0X_ERROR_NONE) {
+            distance = 3000; 
+        }        
+        printf("VL53L0X_2 [mm]: %6ld\r\n", distance_2);
+    
+        gesture_code = tof_gestures_detectDIRSWIPE_1(distance,distance_2,&gestureSwipeData);
         switch(gesture_code)
         {
-            case GESTURES_SINGLE_SWIPE:
-                detected_num ++;
+            case GESTURES_SWIPE_LEFT_RIGHT:
+                printf(" ->->->->\r\n");
+                break;
+
+            case GESTURES_SWIPE_RIGHT_LEFT:
+                printf(" <-<-<-<-\r\n");
+                break;
+            case GESTURES_DISCARDED_TOO_FAST:
+                printf(" too fast\r\n");
+                break;
+            case GESTURES_DISCARDED_TOO_SLOW:
+                printf(" too slow\r\n");
                 break;
             default:
+                // printf(" ---------- \r\n");
             break;
         }
-        printf("VL53L0X [mm]:            %6ld, detected: %d \r\n", distance, detected_num);
-
-        printf("\033[8A");
         
-        ThisThread::sleep_for(10);
+        printf("\033[3A");
+        
+        // ThisThread::sleep_for(10);
     }
 }
