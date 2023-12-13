@@ -27,10 +27,12 @@ int main() {
 
     VL53L0X_1.init_sensor(VL53L0X_DEFAULT_ADDRESS);
     VL53L0X_2.init_sensor(VL53L0X_DEFAULT_ADDRESS);
+    tof_gestures_initDIRSWIPE_1(200,0,1000,&gestureSwipeData);
 
     VL53L0X_1.range_start_continuous_mode(); 
     VL53L0X_2.range_start_continuous_mode(); 
     int status, gesture_code;
+    DirSwipe_Info gestureInfo;
 
     while (true) {
         status = VL53L0X_1.get_measurement(range_continuous_polling, &measurement_data_1);
@@ -52,7 +54,9 @@ int main() {
             }
         }
 
-        gesture_code = tof_gestures_detectDIRSWIPE_1(measurement_data_1.RangeMilliMeter,measurement_data_2.RangeMilliMeter,&gestureSwipeData);
+        gestureInfo = tof_gestures_detectDIRSWIPE_1(measurement_data_1.RangeMilliMeter,measurement_data_2.RangeMilliMeter,&gestureSwipeData);
+        gesture_code = gestureInfo.returnCode;
+        printf("swipe duration [ms]: %6ld\r\n", gestureInfo.duration);
         switch(gesture_code)
         {
             case GESTURES_SWIPE_LEFT_RIGHT:
@@ -71,7 +75,7 @@ int main() {
             default:
                 break;
         }
-        printf("\033[3A");
+        printf("\033[4A");
         // ThisThread::sleep_for(30ms);
     }
 }
