@@ -1,0 +1,96 @@
+<div class="embed-responsive embed-responsive-16by9">
+  <div id="player"></div>
+</div>
+<div>
+  <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+  <h3>Action:  
+    <span id = "action">
+      <script>
+         function updatePlayerState() {
+            $.get('/random_number', function (data) {
+                $('#action').text(data.random_number);
+            });
+        }
+        setInterval(updatePlayerState, 5000);
+        updatePlayerState();
+      </script>
+    </span>
+  </h3>
+</div>
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+<script src="https://www.youtube.com/iframe_api"></script>
+<script>
+  var player;
+  function onYouTubeIframeAPIReady() {
+    // 一般使用 影片的id寫在js裡
+    player = new YT.Player('player', {
+      height: '390',
+      width: '640',
+      videoId: 'M7lc1UVf-VE',
+      events: {
+        'onReady': onPlayerReady
+      }
+    });
+  }
+
+  function onPlayerReady(e){
+    var actionItem = document.getElementById('action');
+    var actionType= actionItem.textContent;
+    var playerState = e.target.getPlayerState();
+  
+    actionItem.addEventListener('DOMSubtreeModified', function(ev) {
+      actionType = actionItem.textContent;   
+      playerState = e.target.getPlayerState();
+      
+      if(actionType ==-1 && playerState ==1){
+        let current = e.target.getCurrentTime();
+        e.target.seekTo(current - 5);
+        e.target.playVideo();
+      }  
+      else if(actionType ==-1 && playerState ==2){
+        let current = e.target.getCurrentTime();
+        e.target.seekTo(current  -5);
+        e.target.pauseVideo();
+      } 
+      else if(actionType ==1 && playerState ==1){
+        let current = e.target.getCurrentTime();
+        e.target.seekTo(current  +5);
+        e.target.playVideo();
+      } 
+      else if(actionType ==1 && playerState ==2){
+        let current = e.target.getCurrentTime();
+        e.target.seekTo(current  +5);
+        e.target.pauseVideo();
+      } 
+      else if(actionType ==-2 && playerState ==1){
+        let current = e.target.getCurrentTime();
+        e.target.seekTo(current - 10);
+        e.target.playVideo();
+      }  
+      else if(actionType ==-2 && playerState ==2){
+        let current = e.target.getCurrentTime();
+        e.target.seekTo(current  -10);
+        e.target.pauseVideo();
+      } 
+      else if(actionType ==2 && playerState ==1){
+        let current = e.target.getCurrentTime();
+        e.target.seekTo(current  +10);
+        e.target.playVideo();
+      } 
+      else if(actionType ==2 && playerState ==2){
+        let current = e.target.getCurrentTime();
+        e.target.seekTo(current  +10);
+        e.target.pauseVideo();
+      } 
+      else if(actionType == 0 & playerState==1){
+        e.target.pauseVideo();
+        console.log(actionType)
+      }
+      else if(actionType == 0 && playerState==2){
+        e.target.playVideo();
+        console.log(actionType);
+      }
+    });    
+
+  }
+</script>
