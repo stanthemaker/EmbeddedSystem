@@ -32,6 +32,7 @@ int main() {
     VL53L0X_1.range_start_continuous_mode(); 
     VL53L0X_2.range_start_continuous_mode(); 
     int status, gesture_code;
+    bool TAP_flag = 0;
     DirSwipe_Info gestureInfo;
 
     while (true) {
@@ -71,6 +72,14 @@ int main() {
                 break;
             case GESTURES_DISCARDED_TOO_SLOW:
                 printf(" too slow\r\n");
+                break;
+            case GESTURES_SINGLE_TAP:
+                if (TAP_flag){
+                    printf(" !!!!!!!!\r\n");
+                }else {
+                    printf(" ????????\r\n");
+                }
+                TAP_flag = !TAP_flag;
                 break;
             default:
                 break;

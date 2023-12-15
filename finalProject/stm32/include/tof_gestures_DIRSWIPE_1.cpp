@@ -107,26 +107,6 @@ DirSwipe_Info tof_gestures_detectDIRSWIPE_1(int32_t left_range_mm, int32_t right
             }
             
             break;
-        
-        // case GESTURES_DIRSWIPE_END:
-        //     duration = timestamp - data->timestamp;
-        //     if(duration > data->maxSwipeDuration){
-        //         // Gesture is too long : discard it
-        //         data->state = GESTURES_DIRSWIPE_START;
-        //         data->gesture_start_from_right = -1;
-        //         //TOF_GESTURES_DEBUG(DIRSWIPE_1,"Too slow");
-        //         return_code = GESTURES_DISCARDED_TOO_SLOW;
-        //     }else if ((data->gesture_start_from_right == 1 && l_motion_code == GESTURES_MOTION_RAISE_UP && r_motion_code == GESTURES_MOTION_UP_STATE) || (data->gesture_start_from_right == 0 && r_motion_code == GESTURES_MOTION_RAISE_UP && l_motion_code == GESTURES_MOTION_UP_STATE)){
-        //         // Gesture detected
-        //         data->state = GESTURES_DIRSWIPE_START;
-        //         return_code = (data->gesture_start_from_right) ? GESTURES_SWIPE_RIGHT_LEFT : GESTURES_SWIPE_LEFT_RIGHT;
-        //         //TOF_GESTURES_DEBUG(DIRSWIPE_1,"DETECTED");
-        //     }else{
-        //         // Waiting...
-        //         //TOF_GESTURES_DEBUG(DIRSWIPE_1,"Waiting...");
-        //         return_code = GESTURES_STARTED;
-        //     }             
-        //     break;
     }
     returnInfo.returnCode = return_code;
     returnInfo.duration = duration;
