@@ -3,16 +3,15 @@
 </div>
 <div>
   <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
-  <h3>Action:  
-    <span id = "action">
+  <h3>Action:
+    <span id="action">
+      <script src="https://cdn.socket.io/4.3.2/socket.io.min.js"></script>
       <script>
-         function updatePlayerState() {
-            $.get('/random_number', function (data) {
-                $('#action').text(data.random_number);
-            });
-        }
-        setInterval(updatePlayerState, 5000);
-        updatePlayerState();
+        var socket = io.connect('http://127.0.0.1:5050');
+        socket.on('stm32_data', function (msg) {
+          console.log('frontend Data received:', msg.data);
+          $('#action').text(msg.data);
+        })
       </script>
     </span>
   </h3>
@@ -20,8 +19,8 @@
 <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 <script src="https://www.youtube.com/iframe_api"></script>
 <script>
-  var player;
-  function onYouTubeIframeAPIReady() {
+    var player;
+    function onYouTubeIframeAPIReady() {
     // 一般使用 影片的id寫在js裡
     player = new YT.Player('player', {
       height: '390',
@@ -33,64 +32,64 @@
     });
   }
 
-  function onPlayerReady(e){
+  function onPlayerReady(e) {
     var actionItem = document.getElementById('action');
-    var actionType= actionItem.textContent;
+    var actionType = actionItem.textContent;
     var playerState = e.target.getPlayerState();
-  
-    actionItem.addEventListener('DOMSubtreeModified', function(ev) {
-      actionType = actionItem.textContent;   
+
+    actionItem.addEventListener('DOMSubtreeModified', function (ev) {
+      actionType = actionItem.textContent;
       playerState = e.target.getPlayerState();
-      
-      if(actionType ==-1 && playerState ==1){
+
+      if (actionType == -1 && playerState == 1) {
         let current = e.target.getCurrentTime();
         e.target.seekTo(current - 5);
         e.target.playVideo();
-      }  
-      else if(actionType ==-1 && playerState ==2){
+      }
+      else if (actionType == -1 && playerState == 2) {
         let current = e.target.getCurrentTime();
-        e.target.seekTo(current  -5);
+        e.target.seekTo(current - 5);
         e.target.pauseVideo();
-      } 
-      else if(actionType ==1 && playerState ==1){
+      }
+      else if (actionType == 1 && playerState == 1) {
         let current = e.target.getCurrentTime();
-        e.target.seekTo(current  +5);
+        e.target.seekTo(current + 5);
         e.target.playVideo();
-      } 
-      else if(actionType ==1 && playerState ==2){
+      }
+      else if (actionType == 1 && playerState == 2) {
         let current = e.target.getCurrentTime();
-        e.target.seekTo(current  +5);
+        e.target.seekTo(current + 5);
         e.target.pauseVideo();
-      } 
-      else if(actionType ==-2 && playerState ==1){
+      }
+      else if (actionType == -2 && playerState == 1) {
         let current = e.target.getCurrentTime();
         e.target.seekTo(current - 10);
         e.target.playVideo();
-      }  
-      else if(actionType ==-2 && playerState ==2){
+      }
+      else if (actionType == -2 && playerState == 2) {
         let current = e.target.getCurrentTime();
-        e.target.seekTo(current  -10);
+        e.target.seekTo(current - 10);
         e.target.pauseVideo();
-      } 
-      else if(actionType ==2 && playerState ==1){
+      }
+      else if (actionType == 2 && playerState == 1) {
         let current = e.target.getCurrentTime();
-        e.target.seekTo(current  +10);
+        e.target.seekTo(current + 10);
         e.target.playVideo();
-      } 
-      else if(actionType ==2 && playerState ==2){
+      }
+      else if (actionType == 2 && playerState == 2) {
         let current = e.target.getCurrentTime();
-        e.target.seekTo(current  +10);
+        e.target.seekTo(current + 10);
         e.target.pauseVideo();
-      } 
-      else if(actionType == 0 & playerState==1){
+      }
+      else if (actionType == 0 & playerState == 1) {
         e.target.pauseVideo();
         console.log(actionType)
       }
-      else if(actionType == 0 && playerState==2){
+      else if (actionType == 0 && playerState == 2) {
         e.target.playVideo();
         console.log(actionType);
       }
-    });    
+    });
 
   }
 </script>
