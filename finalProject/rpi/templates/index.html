@@ -3,7 +3,7 @@
 </div>
 <div>
   <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
-  <h3>Action:
+  <h3>Swipe duration(ms):
     <span id="action">
       <script src="https://cdn.socket.io/4.3.2/socket.io.min.js"></script>
       <script>
@@ -15,17 +15,18 @@
       </script>
     </span>
   </h3>
+  <h3>Seconds to move(s): <span id="sec2mvDisplay"></span></h3>
 </div>
 <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 <script src="https://www.youtube.com/iframe_api"></script>
 <script>
-    var player;
-    function onYouTubeIframeAPIReady() {
+  var player;
+  function onYouTubeIframeAPIReady() {
     // 一般使用 影片的id寫在js裡
     player = new YT.Player('player', {
-      height: '390',
-      width: '640',
-      videoId: 'M7lc1UVf-VE',
+      height: '700',
+      width: '1200',
+      videoId: 'ulfJXy4QptQ',
       events: {
         'onReady': onPlayerReady
       }
@@ -34,61 +35,44 @@
 
   function onPlayerReady(e) {
     var actionItem = document.getElementById('action');
+    var sec2mvDisplay = document.getElementById('sec2mvDisplay');
     var actionType = actionItem.textContent;
     var playerState = e.target.getPlayerState();
+    var duration = player.getDuration();
+    var threshold_5s = 300;
+    var threshold_10s = 150;
 
     actionItem.addEventListener('DOMSubtreeModified', function (ev) {
       actionType = actionItem.textContent;
       playerState = e.target.getPlayerState();
+      let num = parseInt(actionType);
+      let sec2mv = 0;
 
-      if (actionType == -1 && playerState == 1) {
+      if (Math.abs(num) > 300) {
+        sec2mv = 5 * (num / (Math.abs(num)));
+      }
+      else if (Math.abs(num) > 150) {
+        sec2mv = 10 * (num / (Math.abs(num)));
+      } else if (num == 0) {
+        sec2mv = 0;
+      }
+      else {
+        sec2mv = 30 / (num * Math.abs(num)) * duration;
+      }
+      console.log("sec2mv: " + sec2mv);
+
+      if (playerState == 1) {
         let current = e.target.getCurrentTime();
-        e.target.seekTo(current - 5);
-        e.target.playVideo();
+        e.target.seekTo(current + sec2mv);
+        sec2mv == 0 ? e.target.pauseVideo() : e.target.playVideo();
       }
-      else if (actionType == -1 && playerState == 2) {
+      else if (playerState == 2) {
         let current = e.target.getCurrentTime();
-        e.target.seekTo(current - 5);
-        e.target.pauseVideo();
+        e.target.seekTo(current + sec2mv);
+        sec2mv == 0 ? e.target.playVideo() : e.target.pauseVideo();
+        // e.target.pauseVideo();
       }
-      else if (actionType == 1 && playerState == 1) {
-        let current = e.target.getCurrentTime();
-        e.target.seekTo(current + 5);
-        e.target.playVideo();
-      }
-      else if (actionType == 1 && playerState == 2) {
-        let current = e.target.getCurrentTime();
-        e.target.seekTo(current + 5);
-        e.target.pauseVideo();
-      }
-      else if (actionType == -2 && playerState == 1) {
-        let current = e.target.getCurrentTime();
-        e.target.seekTo(current - 10);
-        e.target.playVideo();
-      }
-      else if (actionType == -2 && playerState == 2) {
-        let current = e.target.getCurrentTime();
-        e.target.seekTo(current - 10);
-        e.target.pauseVideo();
-      }
-      else if (actionType == 2 && playerState == 1) {
-        let current = e.target.getCurrentTime();
-        e.target.seekTo(current + 10);
-        e.target.playVideo();
-      }
-      else if (actionType == 2 && playerState == 2) {
-        let current = e.target.getCurrentTime();
-        e.target.seekTo(current + 10);
-        e.target.pauseVideo();
-      }
-      else if (actionType == 0 & playerState == 1) {
-        e.target.pauseVideo();
-        console.log(actionType)
-      }
-      else if (actionType == 0 && playerState == 2) {
-        e.target.playVideo();
-        console.log(actionType);
-      }
+      sec2mvDisplay.textContent = sec2mv;
     });
 
   }
