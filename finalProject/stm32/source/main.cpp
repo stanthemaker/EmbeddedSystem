@@ -50,9 +50,11 @@ void httpRequestTask() {
     while (true) {
         osEvent evt = shared_queue.get();
         if (evt.status == osEventMessage) {
+            
             string* message = (string*) evt.value.p;
-            socket->send_http_request(message->c_str());
 
+            socket->send_http_request(message->c_str());
+            // socket->receive_http_response
             mem_pool.free(message);
         }
     }
@@ -107,7 +109,7 @@ void sensorTask() {
                 snprintf(buff, sizeof(buff), "%ld", gestureInfo.duration);
                 message->assign(buff);
                 shared_queue.try_put(message);
-                printf("%s\n", buff);
+ 
                 break;
             }
             case GESTURES_SWIPE_RIGHT_LEFT: {
@@ -116,7 +118,6 @@ void sensorTask() {
                 snprintf(buff, sizeof(buff), "-%ld", gestureInfo.duration);
                 message->assign(buff);
                 shared_queue.try_put(message);
-                printf("%s\n", buff);
 
                 break;
 
@@ -157,7 +158,9 @@ int main() {
     socket = new SocketDemo();
     MBED_ASSERT(socket);
     socket->run();
-    // socket->send_http_request();
+    // socket->send_http_request("424");
+    // socket->is_socket_closed();
+    // socket->send_http_request("211");
     sensorThread.start(sensorTask);
 
     httpRequestTask();

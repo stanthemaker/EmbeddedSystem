@@ -11,6 +11,7 @@ public:
     ~SocketDemo();
     void run();
     bool send_http_request(const char*);
+    bool is_socket_closed();
 private:
     bool resolve_hostname(SocketAddress &address);
     bool receive_http_response();

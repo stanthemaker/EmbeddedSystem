@@ -2,8 +2,8 @@
 #include <cstdio>
 
 static constexpr size_t MAX_NUMBER_OF_ACCESS_POINTS = 20;
-static constexpr size_t MAX_MESSAGE_RECEIVED_LENGTH = 100;
-static constexpr size_t REMOTE_PORT = 6531; // standard HTTP port
+static constexpr size_t MAX_MESSAGE_RECEIVED_LENGTH = 200;
+static constexpr size_t REMOTE_PORT = 5050; // standard HTTP port
     
 
 SocketDemo::SocketDemo() : _net(NetworkInterface::get_default_instance())
@@ -28,13 +28,7 @@ void SocketDemo::run()
     if (_net->wifiInterface()) {
         /* the scan is not required to connect and only serves to show visible access points */
         wifi_scan();
-
-        /* in this example we use credentials configured at compile time which are used by
-            * NetworkInterface::connect() but it's possible to do this at runtime by using the
-            * WiFiInterface::connect() which takes these parameters as arguments */
     }
-
-    /* connect will perform the action appropriate to the interface type to connect to the network */
 
     printf("Connecting to the network...\r\n");
 
@@ -52,10 +46,6 @@ void SocketDemo::run()
         printf("Error! _socket.open() returned: %d\r\n", result);
         return;
     }
-
-
-
-    /* now we have to find where to connect */
 
     SocketAddress address;
 
@@ -75,17 +65,6 @@ void SocketDemo::run()
         printf("Error! _socket.connect() returned: %d\r\n", result);
         return;
     }
-
-    /* exchange an HTTP request and response */
-
-    // if (!send_http_request()) {
-    //     return;
-    // }
-
-    // if (!receive_http_response()) {
-    //     return;
-    // }
-
     printf("Wifi connection established! \r\n");
 }
 
@@ -106,14 +85,18 @@ bool SocketDemo::resolve_hostname(SocketAddress &address)
     return true;
 }
 
-bool SocketDemo::send_http_request(const char* buffer)
+bool SocketDemo::send_http_request(const char* data)
 {
-    /* loop until whole request sent */
-    // const char buffer[] = "gesture detected\r\n";
+    char buffer[100];
+    snprintf(buffer, sizeof(buffer),
+    "GET /stm32_data?data=%s HTTP/1.1\r\n"
+    "Host: 192.168.200.234\r\n"
+    "Connection: keep-alive\r\n"
+    "\r\n", 
+    data);
+
     nsapi_size_t bytes_to_send = strlen(buffer);
     nsapi_size_or_error_t bytes_sent = 0;
-
-    // printf("\r\nSending message: \r\n%s", buffer);
 
     while (bytes_to_send) {
         bytes_sent = _socket.send(buffer + bytes_sent, bytes_to_send);
@@ -127,9 +110,29 @@ bool SocketDemo::send_http_request(const char* buffer)
         bytes_to_send -= bytes_sent;
     }
 
-    // printf("Complete message sent\r\n");
-
     return true;
+}
+
+bool SocketDemo::is_socket_closed() {
+    char buffer[1];
+    _socket.set_blocking(false);  // Set the socket to non-blocking mode
+    nsapi_size_or_error_t result = _socket.recv(buffer, sizeof(buffer));
+
+    _socket.set_blocking(true);  // Set the socket back to blocking mode
+
+    if (result == 0) {
+        // recv returned 0, which means socket is closed
+        printf("Socket is closed.\r\n");
+        return true;
+    } else if (result < 0 && result != NSAPI_ERROR_WOULD_BLOCK) {
+        // recv returned an error other than WOULD_BLOCK, which also indicates a closed socket or another error
+        printf("Socket error: %d\r\n", result);
+        return true;
+    }
+
+    // Socket is still open
+    printf("socket is still open \r\n");
+    return false;
 }
 
 bool SocketDemo::receive_http_response()
@@ -152,7 +155,6 @@ bool SocketDemo::receive_http_response()
     }
 
     /* the message is likely larger but we only want the HTTP response code */
-
     printf("received %d bytes:\r\n%.*s\r\n\r\n", received_bytes, strstr(buffer, "\n") - buffer, buffer);
 
     return true;
